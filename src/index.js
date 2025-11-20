@@ -16,6 +16,7 @@ app.use(cors());
 app.use("/api/user", router)
 app.use("/api/user", contactRouter)
 
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 }); 

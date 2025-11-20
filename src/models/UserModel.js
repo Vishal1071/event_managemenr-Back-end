@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "email is require"],
-        unique: true 
+        unique: true
     },
     password: {
         type: String,
@@ -17,12 +17,16 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        default: "", 
+        default: "",
     },
     gender: {
         type: String,
         enum: ["Male", "Female", "Other"],
         default: "Other",
+    },
+    avatar: {
+        url: String,
+        public_id: String
     },
     role: {
         type: String,
@@ -36,7 +40,7 @@ userSchema.methods.generateAccessToken = function () {
         {
             _id: this._id,
             email: this.email,
-            role: this.role   
+            role: this.role
         },
         process.env.ACCESS_TOKEN_SECRET,
         {

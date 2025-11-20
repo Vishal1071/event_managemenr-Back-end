@@ -1,5 +1,6 @@
 import express from "express"
-import {register, login, getAllUsers, updateUser, deleteUser, getProfile} from "../controllers/UserController.js"
+import {register, login, getAllUsers, updateUser, deleteUser, getProfile, uploadProfilepic } from "../controllers/UserController.js"
+import upload from "../middleware/multer.js"
 import { verifyToken, isAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -22,5 +23,7 @@ router.put("/updateUser/:id", verifyToken, updateUser);
 // Delete User 
 router.delete("/deleteUser/:id", verifyToken, isAdmin, deleteUser);
 
+// Upload Profile Picture
+router.post("/uploadProfilePic/:id", verifyToken, upload.single("avatar"), uploadProfilepic);
 
 export default router  

@@ -1,5 +1,7 @@
 import User from '../models/UserModel.js'
 import bcrypt from "bcrypt"
+import cloudinary from '../utils/cloudinary.js';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 
 export const register = async (req, res) => {
@@ -149,3 +151,53 @@ export const getProfile = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 }
+
+export const uploadProfilepic = async (req, res) => {
+    try {
+        // ✔️ USER MUST COME FROM JWT, NEVER FROM req.body
+        const userId = req.user?._id;
+        if (!userId) {
+            return res.status(400).json({ message: "Unauthorized: No user ID found" });
+        }
+
+        // ✔️ File check
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        // ✔️ Upload new avatar
+        const cloudRes = await uploadToCloudinary(req.file.buffer);
+
+        // ✔️ Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // ✔️ Delete old avatar if exists
+        if (user.avatar && user.avatar.public_id) {
+            try {
+                await cloudinary.uploader.destroy(user.avatar.public_id);
+            } catch (err) {
+                console.warn("⚠️ Failed to delete old Cloudinary image:", err.message);
+            }
+        }
+
+        // ✔️ Update user avatar
+        user.avatar = {
+            url: cloudRes.secure_url,
+            public_id: cloudRes.public_id
+        };
+
+        await user.save();
+
+        res.json({
+            message: "Profile picture updated successfully",
+            avatar: user.avatar
+        });
+
+    } catch (error) {
+        console.error("Upload Profile Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
