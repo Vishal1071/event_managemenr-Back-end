@@ -40,10 +40,10 @@ export const login = async (req, res) => {
 
         if (!email || !password) {
             return res.status(400).json({ message: "All fields are required" });
-        }
+        }   
 
         const user = await User.findOne({ email });
-        if (!user) {
+        if (!user) {    
             console.log("❌ User not found");
             return res.status(400).json({ message: "User not found" });
         }
@@ -60,6 +60,8 @@ export const login = async (req, res) => {
 
         const accessToken = user.generateAccessToken();
         // const refreshToken = user.generateRefreshToken();
+        
+        
 
         return res.status(200).json({
             message: "Login successfuly",
