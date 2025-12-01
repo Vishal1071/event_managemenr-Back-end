@@ -24,6 +24,6 @@ router.put("/updateUser/:id", verifyToken, updateUser);
 router.delete("/deleteUser/:id", verifyToken, isAdmin, deleteUser);
 
 // Upload Profile Picture
-router.post("/uploadProfilePic/:id", verifyToken, upload.single("avatar"), uploadProfilepic);
+router.put("/uploadProfilePic", verifyToken, upload.single("avatar"), uploadProfilepic);
 
 export default router  

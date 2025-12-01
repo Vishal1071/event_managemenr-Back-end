@@ -158,17 +158,12 @@ export const uploadProfilepic = async (req, res) => {
     try {
         // ✔️ USER MUST COME FROM JWT, NEVER FROM req.body
         const userId = req.user?._id;
-        if (!userId) {
-            return res.status(400).json({ message: "Unauthorized: No user ID found" });
-        }
 
         // ✔️ File check
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
-        // ✔️ Upload new avatar
-        const cloudRes = await uploadToCloudinary(req.file.buffer);
 
         // ✔️ Find user
         const user = await User.findById(userId);
@@ -176,8 +171,11 @@ export const uploadProfilepic = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // ✔️ Upload new avatar
+        const cloudRes = await uploadToCloudinary(req.file.buffer, "event/users");
+
         // ✔️ Delete old avatar if exists
-        if (user.avatar && user.avatar.public_id) {
+        if (user.avatar?.public_id) {
             try {
                 await cloudinary.uploader.destroy(user.avatar.public_id);
             } catch (err) {
