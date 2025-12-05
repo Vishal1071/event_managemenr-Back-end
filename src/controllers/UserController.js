@@ -61,7 +61,6 @@ export const login = async (req, res) => {
         const accessToken = user.generateAccessToken();
         // const refreshToken = user.generateRefreshToken();
         
-        
 
         return res.status(200).json({
             message: "Login successfuly",
@@ -156,25 +155,22 @@ export const getProfile = async (req, res) => {
 
 export const uploadProfilepic = async (req, res) => {
     try {
-        // ✔️ USER MUST COME FROM JWT, NEVER FROM req.body
+        // USER MUST COME FROM JWT, NEVER FROM req.body
         const userId = req.user?._id;
 
-        // ✔️ File check
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
-
-        // ✔️ Find user
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // ✔️ Upload new avatar
+        // Upload new avatar
         const cloudRes = await uploadToCloudinary(req.file.buffer, "event/users");
 
-        // ✔️ Delete old avatar if exists
+        // Delete old avatar if exists
         if (user.avatar?.public_id) {
             try {
                 await cloudinary.uploader.destroy(user.avatar.public_id);
@@ -183,7 +179,7 @@ export const uploadProfilepic = async (req, res) => {
             }
         }
 
-        // ✔️ Update user avatar
+        // Update user avatar
         user.avatar = {
             url: cloudRes.secure_url,
             public_id: cloudRes.public_id

@@ -26,4 +26,9 @@ router.delete("/deleteUser/:id", verifyToken, isAdmin, deleteUser);
 // Upload Profile Picture
 router.put("/uploadProfilePic", verifyToken, upload.single("avatar"), uploadProfilepic);
 
-export default router  
+// router.get("/admin", isAdmin, (req, res) => {
+//     res.json({ msg: "Admin dashboard" });
+// });
+
+
+export default router;
